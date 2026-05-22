@@ -1,0 +1,375 @@
+﻿@model List<AttendenceSystem.ViewModel.DashboardViewModel>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f6fa;
+    }
+
+    .filter-box {
+        background: white;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+
+    .filter-box select, .filter-box button {
+        padding: 8px 12px;
+        margin-right: 10px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+    }
+
+    .filter-box button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+    }
+
+    .table-container {
+        overflow-x: auto;
+        background: white;
+        padding: 10px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        min-width: 900px;
+    }
+
+    th {
+        background-color: #007bff;
+        color: white;
+        padding: 8px;
+    }
+
+    td {
+        padding: 8px;
+        border-bottom: 1px solid #ddd;
+        text-align: center;
+    }
+
+    .total {
+        font-weight: bold;
+        color: green;
+    }
+
+    .running-badge {
+        background: #28a745;
+        color: white;
+        padding: 3px 8px;
+        border-radius: 5px;
+        font-size: 12px;
+    }
+</style>
+
+<!-- ================= FILTER ================= -->
+<div class="filter-box">
+    <form method="get" asp-action="Dashboard">
+
+        <select name="year">
+            <option value="">Select Year</option>
+            @foreach (var y in ViewBag.Years)
+            {
+                <option value="@y">@y</option>
+            }
+        </select>
+
+        <select name="month">
+            <option value="">Select Month</option>
+            @foreach (var m in ViewBag.Months)
+            {
+                <option value="@m">@m</option>
+            }
+        </select>
+
+        <select name="groupId">
+            <option value="">Select Group</option>
+            @foreach (var g in ViewBag.Groups)
+            {
+                <option value="@g.Id">@g.GroupName</option>
+            }
+        </select>
+
+        <select name="employeeId">
+            <option value="">Select Employee</option>
+        </select>
+
+        <button type="submit">Search</button>
+    </form>
+</div>
+
+<!-- ================= TABLE ================= -->
+<div class="table-container">
+    @if (Model != null && Model.Any())
+    {
+        var daysInMonth = DateTime.DaysInMonth(Model.First().Year, Model.First().Month);
+
+        <table>
+            <thead>
+                <tr>
+                    <th>S.No</th>
+                    <th>Employee</th>
+                    <th>Group</th>
+
+                    <!-- ✅ FIXED DAYS HEADER -->
+                    @for (int i = 1; i <= daysInMonth; i++)
+                    {
+                        <th>@i</th>
+                    }
+
+                    <th>Total Hours</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @{
+                    int count = 1;
+                }
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@count</td>
+                        <td>@item.EmployeeName</td>
+                        <td>@item.GroupName</td>
+
+                        <!-- ✅ FIXED DAILY HOURS DISPLAY -->
+                        @for (int i = 1; i <= daysInMonth; i++)
+                        {
+                            <td>
+                                @if (item.DailyHours != null && item.DailyHours.ContainsKey(i))
+                                {
+                                    var time = item.DailyHours[i];
+
+                                    if (time.TotalMinutes > 0)
+                                    {
+                                        @time.ToString(@"hh\:mm")   <!-- ✅ FINAL OUTPUT -->
+                                    }
+                                    else
+                                    {
+                                        <span>-</span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span>-</span>
+                                }
+                            </td>
+                        }
+
+                        <!-- ✅ TOTAL / RUNNING -->
+                        <td class="total">
+                            @if (item.Status == "Running")
+                            {
+                                <span class="running-badge">Running</span>
+                            }
+                            else
+                            {
+                                @item.TotalWorkingHours.ToString(@"hh\:mm")
+                            }
+                        </td>
+                    </tr>
+
+                    count++;
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No data available</p>
+    }
+</div>
+
+@* @model List<AttendenceSystem.ViewModel.DashboardViewModel>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f6fa;
+    }
+    .filter-box {
+        background: white;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+        .filter-box select, .filter-box button {
+            padding: 8px 12px;
+            margin-right: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+        .filter-box button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+        }
+    .table-container {
+        overflow-x: auto;
+        background: white;
+        padding: 10px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        min-width: 900px;
+    }
+
+    th {
+        background-color: #007bff;
+        color: white;
+        padding: 8px;
+    }
+
+    td {
+        padding: 8px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .total {
+        font-weight: bold;
+        color: green;
+    }
+</style>
+
+<!-- ✅ FILTER -->
+<div class="filter-box">
+    <form method="get" asp-action="Dashboard">
+        <select name="year">
+            <option value="">Select Year</option>
+            @foreach (var y in ViewBag.Years)
+            {
+                <option value="@y">@y</option>
+            }
+        </select>
+
+        <select name="month">
+            <option value="">Select Month</option>
+            @foreach (var m in ViewBag.Months)
+            {
+                <option value="@m">@m</option>
+            }
+        </select>
+
+        <select name="groupId" id="groupDropdown">
+            <option value="">Select Group</option>
+            @foreach (var g in ViewBag.Groups)
+            {
+                <option value="@g.Id">@g.GroupName</option>
+            }
+        </select>
+
+        <select name="employeeId" id="employeeDropdown">
+            <option value="">Select Employee</option>
+        </select>
+
+        <button type="submit">Search</button>
+    </form>
+</div>
+
+<!-- ✅ MONTHLY GRID -->
+<div class="table-container">
+    @if (Model != null && Model.Any())
+    {
+        <table>
+            <thead>
+                <tr>
+                    <th>S.No</th>
+                    <th>Employee</th>
+                    <th>Group</th>
+
+                    @for (int i = 1; i <= Model.First().DailyHours.Count; i++)
+                    {
+                        <th>@i</th>
+                    }
+
+                    <th>Total Hours</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @{
+                    int count = 1;
+                } *@
+
+@*                 @foreach (var emp in Model)
+                {
+                    <tr>
+                        <td>@count</td>
+                        <td>@emp.EmployeeName</td>
+                        <td>@emp.GroupName</td>
+                         
+                        @foreach (var day in emp.DailyHours)
+                        {
+                            <td>@day..ToString("0.##")</td>
+                        }
+
+                        <td class="total">
+                            @emp.TotalWorkingHours.TotalHours.ToString("0.##")
+                        </td>
+                    </tr>
+
+                    count++;
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No data found</p>
+    }
+</div>
+
+<!-- 🔥 SESSION DETAILS (CLEAN VERSION) -->
+<hr />
+<h2>Employee Session Details</h2>
+
+@foreach (var emp in Model)
+{
+    <div class="table-container">
+        <h3>@emp.EmployeeName (@emp.GroupName)</h3>
+
+        <table>
+            <tr>
+                <th>Date</th>
+                <th>Login</th>
+                <th>Logout</th>
+                <th>Total</th>
+            </tr>
+
+            @if (emp.Sessions != null && emp.Sessions.Any())
+            {
+                foreach (var item in emp.Sessions)
+                {
+                    <tr>
+                        <td>@item.CreatedDate.ToString("dd-MM-yyyy")</td>
+                        <td>@item.LoginTime.ToString("hh:mm tt")</td>
+                        <td>@(item.LogoutTime != null ? item.LogoutTime.Value.ToString("hh:mm tt") : "Working")</td>
+                        <td>
+                            @(
+                                item.LogoutTime != null
+                                ? (item.LogoutTime.Value - item.LoginTime).ToString(@"hh\:mm")
+                                : (DateTime.Now - item.LoginTime).ToString(@"hh\:mm")
+                            )
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="4">No data</td></tr>
+            } *@
+        </table>
+    @* </div> *@

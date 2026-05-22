@@ -1,0 +1,123 @@
+﻿@model AttendenceSystem.Models.Employee
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<style>
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #4f46e5, #3b82f6);
+    }
+
+    .register-wrapper {
+        min-height: calc(100vh - 80px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        padding-bottom: 50px;
+    }
+
+    .register-box {
+        width: 100%;
+        max-width: 380px;
+        padding: 30px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        color: white;
+    }
+
+        .register-box h1 {
+            text-align: center;
+            margin-bottom: 5px;
+            font-size: 26px;
+        }
+
+    .sub {
+        text-align: center;
+        font-size: 14px;
+        margin-bottom: 25px;
+        opacity: 0.8;
+    }
+
+    .field {
+        margin-bottom: 18px;
+    }
+
+        .field input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            outline: none;
+            font-size: 14px;
+        }
+
+    .btn-register {
+        width: 100%;
+        padding: 12px;
+        background: white;
+        color: #3b82f6;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+        .btn-register:hover {
+            background: #e0e7ff;
+        }
+
+    .links {
+        margin-top: 15px;
+        text-align: center;
+    }
+
+        .links a {
+            color: #e0e7ff;
+            font-size: 13px;
+            text-decoration: none;
+            display: block;
+            margin-top: 5px;
+        }
+
+            .links a:hover {
+                text-decoration: underline;
+            }
+</style>
+
+<div class="register-wrapper">
+    <div class="register-box">
+
+        <h1>Create Account ✨</h1>
+        <p class="sub">Sign up to get started</p>
+
+        <form method="post">
+
+            <div class="field">
+                <input asp-for="Name" type="text" placeholder="Enter your name" required />
+            </div>
+
+            <div class="field">
+                <input asp-for="Email" type="email" placeholder="Enter your email" required />
+            </div>
+
+            <div class="field">
+                <input asp-for="Password" type="password" placeholder="Enter your password" required />
+            </div>
+
+            <button type="submit" class="btn-register">Register</button>
+
+        </form>
+
+        <div class="links">
+            <a href="/Account/Login">Already have an account? Login</a>
+        </div>
+
+    </div>
+</div>
